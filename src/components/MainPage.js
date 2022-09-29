@@ -4,8 +4,109 @@ import * as _ from 'lodash';
 import moment from 'moment';
 import DatePicker from 'react-datepicker';
 import Table from './Table';
+import styled from 'styled-components';
 
 import "react-datepicker/dist/react-datepicker.css";
+
+const Container = styled.div`
+  height: 100%;
+  
+  @media (max-width: 576px) {
+    width: 100%;
+  }
+
+  @media (min-width: 576px) {
+    width: 540px;
+  }
+
+  @media (min-width: 768px) {
+    width: 720px;
+  }
+
+  @media (min-width: 992px) {
+    width: 960px;
+  }
+`
+
+const MainContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(0deg, rgba(187,187,187,1) 0%, rgba(255,255,255,1) 2%, rgba(255,255,255,1) 98%, rgba(238,238,238,1) 100%);
+  padding: 2.5rem 1.5rem;
+  flex-grow: 1;
+  align-items: center;
+`
+
+const Autocomplete = styled.div`
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+
+  .wrapper:focus-within{
+    z-index: 1;
+  }
+`
+
+const DateArea = styled.div`
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 1rem;
+  justify-content: stretch;
+  gap: 1rem;
+
+  .react-datepicker-wrapper {
+    height: 44px;
+    background-color: white;
+    color: #212121;
+    font-size: 16px;
+    margin-top: 1rem;
+    display: block;
+  }
+
+  .react-datepicker-wrapper > :first-child {
+    display: flex;
+    align-items: center;
+    height: 100%;
+  }
+
+  input {
+    height: 100%;
+    width: 100%;
+    border: 1px solid #dfe1e5;
+    border-radius: 24px;
+    font-size: 16px;
+    font-family: inherit;
+    font-size: inherit;
+    background-color: inherit;
+    padding-left: 1rem;
+  }
+`
+
+const Date = styled.div`
+  min-width: none;
+  flex-grow: 1;
+`
+
+const Scroller = styled.div`
+  width: 100%;
+  overflow-x: auto;
+`
+
+const SearchButton = styled.button`
+  border: 1px solid #dfe1e5;
+  border-radius: 12px;
+  background-color: #eee;
+  padding: 0.75rem;
+  padding-right: 2rem;
+  padding-left: 2rem;
+  font-size: 16px;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  margin-bottom: 1rem;
+`
+
+const BestOptionToggle = styled.input`
+  margin-right: 1rem;
+  margin-bottom: 1.5rem;
+`
 
 export class MainPage extends React.Component {
   constructor(props) {
@@ -161,7 +262,7 @@ export class MainPage extends React.Component {
       destinationArea = (
         <div>
           <span className="infoText">Destination airport:</span>
-          <div className="autocomplete">
+          <Autocomplete>
             <ReactSearchAutocomplete
               items={airports}
               disabled
@@ -171,7 +272,7 @@ export class MainPage extends React.Component {
               formatResult={this.formatResult}
               maxResults={5}
             />
-          </div>
+          </Autocomplete>
         </div>
       )
     }
@@ -189,36 +290,36 @@ export class MainPage extends React.Component {
       const service = this.state.service;
 
       dateArea = (
-        <div className="date-area">
-          <div className="date">
+        <DateArea>
+          <Date>
             <span className="infoText">Departure date:</span>
             <DatePicker isClearable={true} dateFormat="yyyy-MM-dd" selected={departureDate} onChange={this.handleSetDepartureDate.bind(this)} />
-          </div>
-          <div className="date">
+          </Date>
+          <Date>
             <span className="infoText">Return date:</span>
             <DatePicker isClearable={true} dateFormat="yyyy-MM-dd" selected={returnDate} onChange={this.handleSetReturnDate.bind(this)} />
-          </div>
-        </div>
+          </Date>
+        </DateArea>
       );
     
 
       if (this.state.departureDate && this.state.returnDate) {
         bestOptionArea = (
           <div>
-            <input checked={service} id="best-offer" type="checkbox" onChange={this.handleSetService.bind(this)} className="best-option-toggle"/>
+            <BestOptionToggle checked={service} id="best-offer" type="checkbox" onChange={this.handleSetService.bind(this)}/>
             <label htmlFor="best-offer" className="infoText">Find the best option for a trip with this duration</label>
           </div>
         );
 
         searchButtonArea = (
           <div>
-            <button onClick={this.searchForResults.bind(this)} className="search-button">Search</button>
+            <SearchButton onClick={this.searchForResults.bind(this)}>Search</SearchButton>
           </div>
         );
       } else if (this.state.origin && this.state.destination && !(this.state.departureDate || this.state.returnDate)) {
         searchAllButtonArea = (
           <div>
-            <button onClick={this.searchForAllResults.bind(this)} className="search-button">Explore offers</button>
+            <SearchButton onClick={this.searchForAllResults.bind(this)}>Explore offers</SearchButton>
           </div>
         )
       }
@@ -265,12 +366,12 @@ export class MainPage extends React.Component {
     }
 
     return (
-      <div className="main-content">
-        <div className="container">
+      <MainContent>
+        <Container>
           <div className="options">
             <span className="infoText">Origin airport:</span>
             <div>
-              <div className="autocomplete">
+              <Autocomplete>
                 <ReactSearchAutocomplete
                   items={airports}
                   disabled
@@ -280,7 +381,7 @@ export class MainPage extends React.Component {
                   formatResult={this.formatResult}
                   maxResults={5}
                 />
-              </div>
+              </Autocomplete>
             </div>
             { destinationArea }
             { searchAllButtonArea }
@@ -288,13 +389,13 @@ export class MainPage extends React.Component {
             { bestOptionArea }
             { searchButtonArea }
           </div>
-          <div className="scroller">
+          <Scroller>
             <div className="data-area">
               { dataTable }
             </div>
-          </div>
-        </div>
-      </div>
+          </Scroller>
+        </Container>
+      </MainContent>
     );
   }
 }

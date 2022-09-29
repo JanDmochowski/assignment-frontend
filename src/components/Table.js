@@ -1,5 +1,43 @@
 import React from 'react';
 import { useTable, usePagination } from 'react-table';
+import styled from 'styled-components';
+
+const DataTable = styled.table`
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid #bbb;
+  border-spacing: 0px;
+  border-radius: 12px;
+`
+
+const DataHeaders = styled.tr`
+  border-bottom: 1px solid #bbb;
+`
+
+const DataHeadersCell = styled.th`
+  padding: 1rem;
+`
+
+const DataBodyCell = styled.td`
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-top: 1px solid #bbb;
+`
+
+const Pagination = styled.div`
+  text-align: center;
+`
+
+const PageSelector = styled.input`
+  border-radius: 12px;
+  font-size: 16px;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  margin-bottom: 1rem;
+  border: 1px solid #bbb;
+  padding: 0 0.5rem;
+`
 
 export default function Table({ columns, data }) {
   const {
@@ -26,31 +64,31 @@ export default function Table({ columns, data }) {
 
   return (
     <>
-      <table className="data-table" {...getTableProps()}>
+      <DataTable {...getTableProps()}>
         <thead>
-          <tr className="data-headers">
+          <DataHeaders>
             {headerGroups.map(headerGroup => (
               headerGroup.headers.map(column => (
-                <th className="data-headers-cell" key={column.Header} {...column.getHeaderProps()}>{column.render('Header')}</th>
+                <DataHeadersCell key={column.Header} {...column.getHeaderProps()}>{column.render('Header')}</DataHeadersCell>
               ))
             ))}
-          </tr>
+          </DataHeaders>
         </thead>
-        <tbody className="data-body" {...getTableBodyProps()}>
+        <tbody {...getTableBodyProps()}>
           {page.map((row, i) => {
             prepareRow(row)
             return (
               <tr key={i} {...row.getRowProps()}>
                 {row.cells.map((cell, index) => {
-                  return <td className="data-body-cell" key={index} {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                  return <DataBodyCell key={index} {...cell.getCellProps()}>{cell.render('Cell')}</DataBodyCell>
                 })}
               </tr>
             )
           })}
         </tbody>
-      </table>
+      </DataTable>
 
-      {data.length > pageSize ? <div className="pagination">
+      {data.length > pageSize ? <Pagination>
         <button onClick={() => previousPage()} disabled={!canPreviousPage}>
           {'<'}
         </button>{' '}
@@ -65,8 +103,7 @@ export default function Table({ columns, data }) {
         </span>
         <span>
           | Go to page:{' '}
-          <input
-            className="page-selector"
+          <PageSelector
             type="number"
             defaultValue={pageIndex + 1}
             onChange={e => {
@@ -76,7 +113,7 @@ export default function Table({ columns, data }) {
             style={{ width: '100px' }}
           />
         </span>{' '}
-      </div> : <div></div>}
+      </Pagination> : <div></div>}
     </>
   )
 }
